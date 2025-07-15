@@ -1,0 +1,9 @@
+Servem como alvos de seleção, normalmente para indicar que entidades específicas são afetas por alguma coisa
+
+@a = All Players (off included)
+@e = Todas as entidades:
+    - @e[type="Zombie"]
+@p = O player mais próximo do executor do comando
+@r = Random player (pode ser config para mobs)
+@s = Self
+@n = Named entities (@n[name="Zombie"])

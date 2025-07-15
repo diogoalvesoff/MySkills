@@ -1,0 +1,13 @@
+> Permite modificar a origem, as condições e o contexto em que outros comandos são executados.
+    - Meio que "empresta" as características de uma entidade (como posição, rotação, dimensão ou permissões) para executar um comando como se fosse outra coisa.
+
+
+Subcomandos:
+
+1- /execute as <entidade>:
+    > Muda o executor do comando
+        - /execute as @e[type=sheep] run say Sou uma ovelha!
+
+2- /execute at <entidade>:
+    > Executa na posição da entidade, mantendo o executor original
+        - /execute at @p run summon lightning_bolt
