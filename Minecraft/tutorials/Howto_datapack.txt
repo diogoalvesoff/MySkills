@@ -1,0 +1,39 @@
+Datapacks no minecraft são pacotes que permitem alterar regras do jogo sem modificar o mesmo.
+
+Como criar:
+- Uma pasta - pasta do Datapack
+> Dentro dela colocar um ficheiro pack.mcmeta -> Descreve o pacote para o jogo. Necessário sempre
+
+pack.mcmeta:
+{
+    "pack" {
+        "pack_format": 48,
+        "description": "blablabla"
+    }
+}
+
+Dentro da pasta principal, criar outra pasta: data
+Dentro da pasta data é que vai estar o datapack: folder/data/datapack_name
+Dentro do datapack, criar ainda uma pasta function, que é onde vai estar a lógica: folder/data/datapack_name/function
+
+Existem duas funções que devem existir em qualquer data pack:
+> tick.mcfunction : função que corre a cada tick
+> load.mcfunction : função que corre em loading time
+
+
+Agora, vamos definir essas funções que correm tanto em tick ou em loading:
+> Voltar a data e criar minecraft/tags/function/
+> Criar os ficheiros load.json e tick.json.
+
+No ficheiro respetivo meter:
+{
+    "values": [
+        "datapack_name:load"
+    ]
+}
+
+Todas as pastas foram criadas:
+
+
+Code Time:
+Agora, nos ficheiros load.mcfunction e tick.mcfunction vamos escrever comandos do minecraft.

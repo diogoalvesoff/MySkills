@@ -1,0 +1,1 @@
+effect give @a minecraft:jump_boost 1 10 true

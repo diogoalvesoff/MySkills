@@ -1,0 +1,1 @@
+setblock 0 100 0 diamond_block
