@@ -11,3 +11,23 @@ Subcomandos:
 2- /execute at <entidade>:
     > Executa na posição da entidade, mantendo o executor original
         - /execute at @p run summon lightning_bolt
+
+3- /execute positioned <x> <y> <z>
+   /execute positioned as <entidade>
+    > Muda a posição da execução para umas coordenadas ou para a pos de uma entidade
+        - /execute positioned ~ ~-2 ~ run setblock ~ ~ ~ stone
+        - /execute positioned as @p run setblock ~ ~10 ~ stone
+
+4- /execute rotated <y-rot> <x-rop>
+   /execute rotated as <entity>
+    > Muda a rotação do comando (útil para projéteis e tp direcional)
+    > A entidade que executa o comando (/execute as ...) é afetada pela rotação (fica com a rotação usada no comando)
+        - /execute as @p rotated 0 0 run tp ^ ^ ^5
+        - /execute as @s rotated as @s run tp ^ ^ ^5
+
+5- /execute as @s facing <x> <Y> <z>
+   /execute as @s facing entity <entidade> <anchor>
+    > Muda a direção do comando
+    > A entidade que executa o comando (/execute as ...) não é afetada pela rotação (fica na rotação que estava anteriormente)
+        - /execute as @s facing ~ ~ ~ run tp ^ ^ ^5
+        - /execute as @s facing entity @p feet run tp ^ ^ ^5

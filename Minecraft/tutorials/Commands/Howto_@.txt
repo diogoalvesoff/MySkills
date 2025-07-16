@@ -2,7 +2,7 @@ Servem como alvos de seleção, normalmente para indicar que entidades específi
 
 @a = All Players (off included)
 @e = Todas as entidades:
-    - @e[type="Zombie"]
+    - @e[type="Zombie", sort=neares, limit=1]
 @p = O player mais próximo do executor do comando
 @r = Random player (pode ser config para mobs)
 @s = Self
