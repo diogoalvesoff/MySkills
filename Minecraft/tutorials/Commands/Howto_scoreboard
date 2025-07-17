@@ -1,0 +1,41 @@
+O scoreboard serve para definir objetivos para os players alcançarem.
+
+1- Criar objetivo no scoreboard:
+   /scoreboard objectives add kills dummy
+
+
+2- Definir pontuações:
+   /scoreboard players set @p kills 10
+
+
+3- Verificar pontuações:
+   /execute if score @p kills matches 10..20 run give @p diamond 1
+
+
+Automatização:
+> Objetivos automáticos registam estatísticas do jogo (blocos minerados, mortes, distância percorrida, ...)
+   /scoreboard objectives add minedDirt mineBlock.minecraft.minedDirt
+    > Todas as vezes que um player minerar terra, o score minedDirt aumentará em 1.
+
+> Estastísticas úteis:
+    - Blocos minerados: mineBlockminecraft.diamond_ore
+    - Blocos craftados: craftItem.minecraft.cake
+    - Blocos usados   : used:minecraft.sand
+    - Blocos apanhados: picked_up:minecraft.sponge
+    - Mortes por mobs : entityKilledBy.minecraft.Zombie
+    - Distância andada: walkOneCm
+
+
+Triggers:
+> A pontuação pode ser dada pelos jogadores:
+   /scoreboard objectives add MeusPontos trigger
+   /scoreboard players enable @a MeusPontos                     # faz com que os jogadores consigam interagir com MeusPontos
+> Os players podem dar trigger para dar pontos a si mesmos:
+   /trigger MeusPontos set 1
+   /triiger MeusPontos add 5
+> Verificar pontos:
+   /execute as @a[score={MeusPontos=5..}] run give @s diamond
+
+> É necessário controlo para que os players não abusem disto:
+   /scoreboard players set @a[score={MeusPontos=5..}] MeusPontos 0  # Reset
+   /execute as @a[score={MeusPontos=1..}, tag!jaUsou] run tag @s add jaUsou

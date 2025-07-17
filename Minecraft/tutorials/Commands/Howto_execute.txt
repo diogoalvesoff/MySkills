@@ -31,3 +31,33 @@ Subcomandos:
     > A entidade que executa o comando (/execute as ...) não é afetada pela rotação (fica na rotação que estava anteriormente)
         - /execute as @s facing ~ ~ ~ run tp ^ ^ ^5
         - /execute as @s facing entity @p feet run tp ^ ^ ^5
+
+6- /execute if entity <alvo>
+   /execute if block <pos> <bloco>
+   /execute if score <alvo> <objetivo> matches <range>
+   (mesma coisa, mas com unless envez de if)
+    > Executa coisas perante condições (unless = else)
+        - /execute if entity @e[name=eduardo] run give @s wheat_seeds
+        - /execute if block ~ ~-1 ~ grass_block run give @p wheat_seeds
+        - /execute if score @s DailyReward >= @a[name=alvini] DailyReward run tellraw @s {"text":"Você é o Maior!!!", "color":"green"}
+
+
+7- /execute store result ...
+   /execute store success ...
+    > Direcionam o output do domando destino~
+    > Também podem sobreescrever as caraterísticas de algum elemento do jogo
+        - /execute store result entity @e[type=ender_dragon, sort=nearest, limit=1] Health byte 0 as @e[type=ender_dragon] run say Morri!  # Mata dragão
+        - /execute store result score @p WoolCount run clear @p white_wool 0        # Vê as lãs no inventário e adiciona à scoreboard
+
+    
+8- /execute on ...
+
+
+9- /execute in ...
+    > Altera a dimensão na qual o comando é executado
+        - /execute in the_nether run tp @a 0 64 0
+
+
+10- /execute anchored ...
+    > Define o ponto de ancoragem para comandos direcionais (eyes ou feet):
+        - /execute as @p anchored eyes run tp @s ^ ^ ^5
