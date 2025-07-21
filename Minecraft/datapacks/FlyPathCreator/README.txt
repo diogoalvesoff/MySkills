@@ -8,12 +8,17 @@ Contexto:
 > O datapack constroi automáticamente a pista de voo, para que outros jogadores a percorram com elytra.
 
 Instruções de uso:
-PRE-1: O jogador deve ter acesso a comandos (op)
-INT-1: O jogador coloca a tag "fly" nele próprio para iniciar a construção do precurso
+> Modo automático:
+    PRE-1: O jogador deve ter acesso a comandos (op)
+    INT-1: O jogador coloca a tag "fly" nele próprio para iniciar a construção do precurso
         -> /tag @s add fly
-INT-2: O jogador voa pelo mapa para construir o percurso de voo
-INT-3: O jogador remove a tag "fly" dele próprio para terminar a construção do precurso
+    INT-2: O jogador voa pelo mapa para construir o percurso de voo
+    INT-3: O jogador remove a tag "fly" dele próprio para terminar a construção do precurso
         -> /tag @s remove fly
+    
+> Modo manual:
+    INT-1: O jogador executa a função fly:build para construir um arco do percurso à sua volta
+        -> /function fly:build
 
 
 O que realmente acontece:
