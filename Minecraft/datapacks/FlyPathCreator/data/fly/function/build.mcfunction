@@ -1,0 +1,12 @@
+setblock ^ ^-3 ^ sea_lantern
+setblock ^1 ^-2 ^ sea_lantern
+setblock ^-1 ^-2 ^ sea_lantern
+setblock ^2 ^-1 ^ sea_lantern
+setblock ^-2 ^-1 ^ sea_lantern
+setblock ^-3 ^ ^ sea_lantern
+setblock ^3 ^ ^ sea_lantern
+setblock ^2 ^1 ^ sea_lantern
+setblock ^-2 ^1 ^ sea_lantern
+setblock ^1 ^2 ^ sea_lantern
+setblock ^-1 ^2 ^ sea_lantern
+setblock ^ ^3 ^ sea_lantern
