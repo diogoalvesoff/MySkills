@@ -1,0 +1,3 @@
+O attribute serve para alterar qualquer variável relacionada com o jogador. Por exemplo:
+> Velocidade de ataque:
+    - /attribute @s attack_speed modifier add <UUID> 10 0           # Adiciona 10 à velocidade de ataque
