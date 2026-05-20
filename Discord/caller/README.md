@@ -1,45 +1,32 @@
 # Discord Caller Bot
 
-Bot de exemplo para Discord usando `discord.py` e variáveis de ambiente.
+A specialized Discord bot built with `discord.py` designed to manage role mentions securely. It allows authorized users (e.g., Hosters) to ping specific alert roles (like game modes or specific locations) via slash commands, without needing to grant them universal `@mention` permissions in the server.
 
-## Configuração
+## Features
 
-1. Crie e ative um ambiente virtual:
-   - Windows (PowerShell): `python -m venv .venv`\n`.\.venv\Scripts\Activate.ps1`
-   - Windows (CMD): `python -m venv .venv`\n`.\.venv\Scripts\activate.bat`
+* **Controlled Mentions:** Users can only ping pre-approved roles defined in the bot's internal dictionary.
+* **Role-Based Access Control (RBAC):** Only users with specific roles (Hoster, Premium Hoster) can execute the commands.
+* **Slash Commands:** Fully integrated with Discord's modern UI using `/ping <role>`.
+* **Alias Mapping:** Supports quick aliases for faster typing (e.g., typing `/ping m` to ping the "Mines" role).
+* **Global Error Handling:** Gracefully catches permission errors and missing roles, returning clean, ephemeral messages to the user without cluttering the chat.
 
-2. Instale dependências:
+## Prerequisites
+
+* Python 3.8 or higher
+* A valid Discord Bot Token
+
+## Setup & Installation
+
+1. **Create and activate a virtual environment:**
+   * **Windows (PowerShell):** ```powershell
+     python -m venv .venv
+     .\.venv\Scripts\Activate.ps1
+     ```
+   * **Windows (CMD):** ```cmd
+     python -m venv .venv
+     .\.venv\Scripts\activate.bat
+     ```
+
+2. **Install dependencies:**
    ```bash
    pip install -r requirements.txt
-   ```
-
-3. Crie um arquivo `.env` com base em `.env.example`:
-   ```bash
-   copy .env.example .env
-   ```
-
-4. Preencha `DISCORD_TOKEN` no arquivo `.env`.
-
-## Uso
-
-Inicie o bot com:
-```bash
-python caller.py
-```
-
-## Comandos
-
-- `!ping` — responde `Pong! 🏓`
-- `!hello` — envia uma saudação ao autor da mensagem
-
-## Estrutura
-
-- `caller.py` — ponto de entrada do bot
-- `.env.example` — exemplo de configuração de ambiente
-- `.gitignore` — arquivos e pastas ignorados pelo Git
-- `.github/workflows/python-app.yml` — workflow do GitHub Actions
-- `.vscode/` — configuração do VS Code
-
-## Observações
-
-Não faça commit do `.env` real. O token do bot deve ser mantido em segredo.
