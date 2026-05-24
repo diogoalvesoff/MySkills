@@ -39,20 +39,49 @@ client = Client (command_prefix="!", intents=intents)
 async def on_app_command_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
     if isinstance(error, app_commands.MissingAnyRole):
         await interaction.response.send_message("You don't have perms to execute me", ephemeral=True)
-    else:
-        print(f"E: '{interaction.command.name}' failed: {error}")
+        return
+    print(f"E: '{interaction.command.name}' failed: {error}")
     if not interaction.response.is_done():
-        await interaction.response.send_message(f"I think smth went wrong... <@&{ADMIN_ROLE_ID}> <@&{SECURITY_MANAGER_ROLE_ID}>")
+        await interaction.response.send_message(f"I think smth went wrong... role <@&{SECURITY_MANAGER_ROLE_ID}>")
 
 
+async def ping_autocomplete (interaction: discord.Interaction, current: str) -> list[app_commands.Choice[str]]:
+    choices = []
+    user_role_ids = [role.id for role in interaction.user.roles]
+    for category in PING_CATEGORIES:
+        if any(r_id in category["allowed_roles"] for r_id in user_role_ids):
+            for opt in category["options"]:
+                name = ROLES_NAME.get(opt)
+                if name and current.lower() in name.lower():
+                    choices.append(app_commands.Choice(name=name, value=opt))
+
+    return choices[:25]
+
+@app_commands.checks.has_any_role(*ROLES_WITH_PERMS_TO_USE_BOT)
 @client.tree.command(name="ping", description="If you are a hoster or a premium hoster, use me to ping certain roles", guild=GUILD)
-@app_commands.checks.has_any_role(HOSTER_ROLE_ID, PREMIUM_HOSTER_ROLE_ID)
+@app_commands.autocomplete(role=ping_autocomplete)
 async def ping(interaction: discord.Interaction, role: str):
     role_key = role.lower()
-    if role_key not in roles_dic:
+    target_role_id = ROLES_ID.get(role_key)
+    if not target_role_id:
         await interaction.response.send_message("That role doesn't exist", ephemeral=True)
         return
-    target_role_id = roles_dic.get(role_key)
+
+    user_role_ids = [r.id for r in interaction.user.roles]
+    has_perms = False
+    
+    for category in PING_CATEGORIES:
+        category_target_ids = [ROLES_ID[opt] for opt in category["options"]]
+        
+        if target_role_id in category_target_ids:
+            if any(r_id in category["allowed_roles"] for r_id in user_role_ids):
+                has_perms = True
+            break
+    
+    if not has_perms:
+        await interaction.response.send_message("You don't have perms to ping that role", ephemeral=True)
+        return
+
     if target_role_id: 
         await interaction.response.send_message(f"<@&{target_role_id}>")
 
