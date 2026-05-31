@@ -1,8 +1,3 @@
-import os
-from dotenv import load_dotenv
-import discord
-from discord import app_commands
-from discord.ext import commands
 from globals import *
 
 
@@ -11,6 +6,15 @@ TOKEN = os.getenv('TOKEN')
 
 
 class Client (commands.Bot):
+    def __init__(self):
+        intents = discord.Intents.default()
+        intents.message_content = True
+        intents.reactions = True                                    # lets see reactions
+        intents.guilds = True                                       # lets see specific guild info
+        intents.members = True                                      # lets assign roles to users~
+        super().__init__(command_prefix="!", intents=intents)
+        self.gamble_cooldown = commands.CooldownMapping.from_cooldown(1, COOLDOWN, commands.BucketType.user)
+
     async def on_ready(self):
         print(f'Logged on as {self.user}')
         try:
@@ -19,21 +23,61 @@ class Client (commands.Bot):
         except Exception as e:
             print (f'Error syncing commands: {e}')
 
+    async def on_message(self, message: discord.Message):
+        if message.author.bot:
+            return
+
+        bucket = self.gamble_cooldown.get_bucket(message)
+        retry_after = bucket.update_rate_limit()
+        if retry_after:
+            print(f"Rate limit catch. {message.author.name} gotta wait more {retry_after:.2f}s")
+            return
+        
+        await self.process_commands(message)
+
+        content = message.content
+        num_words = len(re.findall(r'\w+', content))
+            
+        if num_words == 0:
+            return
+
+        # 3. Lógica principal
+        perms_channel = message.author.guild.get_channel(1510644799311450152)
+        if num_words == 1:
+            # Regra: Se tem 1 palavra, tem de estar na words1
+            if padrao_w1.search(content):
+                print(f"{message.author.mention} asked for perms: {content}")
+                await message.delete()
+                if perms_channel:
+                    await perms_channel.send(f"{message.author.mention} asked for perms!\nGambling ......\nNo")
+                else:
+                    print("E: No perms_channel")
+                    
+        elif num_words > 1:
+            # Regra: Se tem > 1 palavra, precisa de uma da words1 E uma da words2
+            if padrao_w1.search(content) and padrao_w2.search(content):
+                print(f"{message.author.mention} asked for perms: {content}")
+                await message.delete()
+                if perms_channel:
+                    await perms_channel.send(f"{message.author.mention} asked for perms!\nGambling ......\nNo")
+                else:
+                    print("E: No perms_channel")
+
+        if content.startswith("1/10"):
+            if perms_channel:
+                await perms_channel.send(f"True")
+            else:
+                print("E: No perms_channel")
+
+        if content.startswith("ps"):
+            await message.reply(PS)
+
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.CommandNotFound):
             return
         print(f"E: '{ctx.command} failed: {error}")
-        
 
-
-intents = discord.Intents.default()
-intents.message_content = True                              # lets see messages
-intents.reactions = True                                    # lets see reactions
-intents.guilds = True                                       # lets see specific guild info
-intents.members = True                                      # lets assign roles to users
-
-client = Client (command_prefix="!", intents=intents)
-
+client = Client()
 
 @client.tree.error
 async def on_app_command_error(interaction: discord.Interaction, error: app_commands.AppCommandError):

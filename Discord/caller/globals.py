@@ -1,4 +1,10 @@
+import os
+import re
+import time
+from dotenv import load_dotenv
 import discord
+from discord import app_commands
+from discord.ext import commands
 
 GUILD_ID = 1479320102745800838
 GUILD = discord.Object(id=GUILD_ID)
@@ -106,3 +112,13 @@ PING_CATEGORIES = [
         "options": ["t"]
     }
 ]
+
+
+perms_gamble_words1 = ["admin", "administrator", "mod", "moderator", "perms", "permissions", "pass", "permes", "prems", "pers", "perm"]
+perms_gamble_words2 = ["make", "rn", "now", "right now", "please", "me", "i", "gimme", "gimmie", "give", "perms", "pass"]
+padrao_w1 = re.compile(r'\b(?:' + '|'.join(map(re.escape, perms_gamble_words1)) + r')\b', re.IGNORECASE)
+padrao_w2 = re.compile(r'\b(?:' + '|'.join(map(re.escape, perms_gamble_words2)) + r')\b', re.IGNORECASE)
+
+PS = "https://www.roblox.com/share?code=24f0174ac4601144ba68fa7999fbda3b&type=Server"
+
+COOLDOWN = 2.0
