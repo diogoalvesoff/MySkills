@@ -1,4 +1,4 @@
-from hardcore_globals import ROLE_IDS
+from shared.hardcore_globals import ROLE_IDS
 import re
 import discord
 
