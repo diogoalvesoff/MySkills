@@ -1,4 +1,18 @@
-from globals import *
+import os
+import re
+import discord
+from discord import app_commands
+from discord.ext import commands
+from dotenv import load_dotenv
+
+from hardcore_globals import GUILD_INFO, ROLE_IDS, ROLE_NAMES, CHANNEL_IDS
+from caller_contants import (
+    PS, COOLDOWN,
+    ROLES_WITH_PERMS_TO_USE__PING, ROLES_WITH_PERMS_TO_PING__BADGES, ROLES_WITH_PERMS_TO_PING__SHOP_RESET, ROLES_WITH_PERMS_TO_PING__GIVEAWAY, ROLES_WITH_PERMS_TO_PING__LEAK, ROLES_WITH_PERMS_TO_PING__TOURNAMENT, ROLES_WITH_PERMS_TO_USE__ACTIVITY,
+    PING_CATEGORIES,
+    PATTERN_W1, PATTERN_W2,
+    BUTTON_ACTIVITY_ACTIVE, BUTTON_ACTIVITY_INACTIVE
+)
 
 
 load_dotenv()
@@ -18,8 +32,8 @@ class Client (commands.Bot):
     async def on_ready(self):
         print(f'Logged on as {self.user}')
         try:
-            synced = await self.tree.sync(guild=GUILD)
-            print (f'Synced {len(synced)} commands to guild {GUILD_ID}')
+            synced = await self.tree.sync(guild=GUILD_INFO["GUILD"])
+            print (f'Synced {len(synced)} commands to guild {GUILD_INFO["GUILD_ID"]}')
         except Exception as e:
             print (f'Error syncing commands: {e}')
 
@@ -45,7 +59,7 @@ class Client (commands.Bot):
         perms_channel = message.author.guild.get_channel(1510644799311450152)
         if num_words == 1:
             # Regra: Se tem 1 palavra, tem de estar na words1
-            if padrao_w1.search(content):
+            if PATTERN_W1.search(content):
                 print(f"{message.author.mention} asked for perms: {content}")
                 await message.delete()
                 if perms_channel:
@@ -55,7 +69,7 @@ class Client (commands.Bot):
                     
         elif num_words > 1:
             # Regra: Se tem > 1 palavra, precisa de uma da words1 E uma da words2
-            if padrao_w1.search(content) and padrao_w2.search(content):
+            if PATTERN_W1.search(content) and PATTERN_W2.search(content):
                 print(f"{message.author.mention} asked for perms: {content}")
                 await message.delete()
                 if perms_channel:
@@ -76,8 +90,8 @@ class Client (commands.Bot):
             if not message.guild:
                 return
 
-            if message.channel.id != VOUCHES_CHANNEL:
-                resting_role = message.guild.get_role(RESTING_ROLE_ID)
+            if message.channel.id != CHANNEL_IDS.get("VOUCHES_CHANNEL"):
+                resting_role = message.guild.get_role(ROLE_IDS.get("RESTING_ROLE_ID"))
                 if not resting_role:
                     print("Err: No resting role")
                     return
@@ -105,7 +119,7 @@ async def on_app_command_error(interaction: discord.Interaction, error: app_comm
         return
     print(f"E: '{interaction.command.name}' failed: {error}")
     if not interaction.response.is_done():
-        await interaction.response.send_message(f"I think smth went wrong... role <@&{SECURITY_MANAGER_ROLE_ID}>")
+        await interaction.response.send_message(f"I think smth went wrong... role <@&{ROLE_IDS.get('ADMIN_ROLE_ID')}>")
 
 
 async def ping_autocomplete (interaction: discord.Interaction, current: str) -> list[app_commands.Choice[str]]:
@@ -114,7 +128,7 @@ async def ping_autocomplete (interaction: discord.Interaction, current: str) -> 
     for category in PING_CATEGORIES:
         if any(r_id in category["allowed_roles"] for r_id in user_role_ids):
             for opt in category["options"]:
-                name = ROLES_NAME.get(opt)
+                name = ROLE_NAMES.get(opt)
                 if name and current.lower() in name.lower():
                     choices.append(app_commands.Choice(name=name, value=opt))
 
@@ -127,8 +141,7 @@ async def ping_autocomplete (interaction: discord.Interaction, current: str) -> 
 #################################################################################################################################
 
 1. /ping
-2. /set active
-2. /set inactive
+2. /activity
 
 """
 
@@ -139,11 +152,11 @@ async def ping_autocomplete (interaction: discord.Interaction, current: str) -> 
 """
 
 @app_commands.checks.has_any_role(*ROLES_WITH_PERMS_TO_USE__PING)
-@client.tree.command(name="ping", description="If you are a hoster or a premium hoster, use me to ping certain roles", guild=GUILD)
+@client.tree.command(name="ping", description="If you are a hoster or a premium hoster, use me to ping certain roles", guild=GUILD_INFO["GUILD"])
 @app_commands.autocomplete(role=ping_autocomplete)
 async def ping(interaction: discord.Interaction, role: str):
     role_key = role.lower()
-    target_role_id = ROLES_ID.get(role_key)
+    target_role_id = ROLE_IDS.get(role_key)
     if not target_role_id:
         await interaction.response.send_message("That role doesn't exist", ephemeral=True)
         return
@@ -152,7 +165,7 @@ async def ping(interaction: discord.Interaction, role: str):
     has_perms = False
     
     for category in PING_CATEGORIES:
-        category_target_ids = [ROLES_ID[opt] for opt in category["options"]]
+        category_target_ids = [ROLE_IDS[opt] for opt in category["options"]]
         
         if target_role_id in category_target_ids:
             if any(r_id in category["allowed_roles"] for r_id in user_role_ids):
@@ -178,9 +191,9 @@ class SetActivity(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=60)
 
-    @discord.ui.button(label=BUTTON_ACTIVITY_ACTIVE_LABEL, style=BUTTON_ACTIVITY_ACTIVE_STYLE, custom_id=BUTTON_ACTIVITY_ACTIVE_CUSTOM_ID)
+    @discord.ui.button(label=BUTTON_ACTIVITY_ACTIVE["label"], style=BUTTON_ACTIVITY_ACTIVE["style"], custom_id=BUTTON_ACTIVITY_ACTIVE["cid"])
     async def btn_activity_active(self, interaction: discord.Interaction, button: discord.ui.Button):
-        resting_role = interaction.guild.get_role(RESTING_ROLE_ID)
+        resting_role = interaction.guild.get_role(ROLE_IDS.get("RESTING_ROLE_ID"))
         if not resting_role:
             print("Err: No resting role")
             return
@@ -195,13 +208,13 @@ class SetActivity(discord.ui.View):
             view=self
         )
 
-        staff_chat = interaction.guild.get_channel(STAFF_CHANNEL)
+        staff_chat = interaction.guild.get_channel(CHANNEL_IDS.get("STAFF_CHANNEL"))
         if staff_chat:
             await staff_chat.send(f"{interaction.user.mention} is active")
 
-    @discord.ui.button(label=BUTTON_ACTIVITY_INACTIVE_LABEL, style=BUTTON_ACTIVITY_INACTIVE_STYLE, custom_id=BUTTON_ACTIVITY_INACTIVE_CUSTOM_ID)
+    @discord.ui.button(label=BUTTON_ACTIVITY_INACTIVE["label"], style=BUTTON_ACTIVITY_INACTIVE["style"], custom_id=BUTTON_ACTIVITY_INACTIVE["cid"])
     async def btn_activity_inactive(self, interaction: discord.Interaction, button: discord.ui.Button):
-        resting_role = interaction.guild.get_role(RESTING_ROLE_ID)
+        resting_role = interaction.guild.get_role(ROLE_IDS.get("RESTING_ROLE_ID"))
         if not resting_role:
             print("Err: No resting role")
             return
@@ -216,12 +229,12 @@ class SetActivity(discord.ui.View):
             view=self
         )
 
-        staff_chat = interaction.guild.get_channel(STAFF_CHANNEL)
+        staff_chat = interaction.guild.get_channel(CHANNEL_IDS.get("STAFF_CHANNEL"))
         if staff_chat:
             await staff_chat.send(f"{interaction.user.mention} is inactive")
 
 @app_commands.checks.has_any_role(*ROLES_WITH_PERMS_TO_USE__ACTIVITY)
-@client.tree.command(name="activity", description="If you are a staff member, use me to declare yourself active or inactive", guild=GUILD)
+@client.tree.command(name="activity", description="If you are a staff member, use me to declare yourself active or inactive", guild=GUILD_INFO["GUILD"])
 async def activity (interaction: discord.Interaction):
     view = SetActivity()
     await interaction.response.send_message(f"Press the button that best suits your purpose", view=view, ephemeral=True)
