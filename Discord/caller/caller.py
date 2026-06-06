@@ -29,6 +29,9 @@ class Client (commands.Bot):
         super().__init__(command_prefix="!", intents=intents)
         self.gamble_cooldown = commands.CooldownMapping.from_cooldown(1, COOLDOWN, commands.BucketType.user)
 
+    async def setup_hook(self) -> None:
+        self.add_view(SetActivity())
+
     async def on_ready(self):
         print(f'Logged on as {self.user}')
         try:
@@ -122,19 +125,6 @@ async def on_app_command_error(interaction: discord.Interaction, error: app_comm
         await interaction.response.send_message(f"I think smth went wrong... role <@&{ROLE_IDS.get('ADMIN_ROLE_ID')}>")
 
 
-async def ping_autocomplete (interaction: discord.Interaction, current: str) -> list[app_commands.Choice[str]]:
-    choices = []
-    user_role_ids = [role.id for role in interaction.user.roles]
-    for category in PING_CATEGORIES:
-        if any(r_id in category["allowed_roles"] for r_id in user_role_ids):
-            for opt in category["options"]:
-                name = ROLE_NAMES.get(opt)
-                if name and current.lower() in name.lower():
-                    choices.append(app_commands.Choice(name=name, value=opt))
-
-    return choices[:25]
-
-
 """
 #################################################################################################################################
 #                                                               COMANDOS                                                        #
@@ -150,6 +140,18 @@ async def ping_autocomplete (interaction: discord.Interaction, current: str) -> 
 #                                                                PING                                                           #
 #################################################################################################################################
 """
+
+async def ping_autocomplete (interaction: discord.Interaction, current: str) -> list[app_commands.Choice[str]]:
+    choices = []
+    user_role_ids = [role.id for role in interaction.user.roles]
+    for category in PING_CATEGORIES:
+        if any(r_id in category["allowed_roles"] for r_id in user_role_ids):
+            for opt in category["options"]:
+                name = ROLE_NAMES.get(opt)
+                if name and current.lower() in name.lower():
+                    choices.append(app_commands.Choice(name=name, value=opt))
+
+    return choices[:25]
 
 @app_commands.checks.has_any_role(*ROLES_WITH_PERMS_TO_USE__PING)
 @client.tree.command(name="ping", description="If you are a hoster or a premium hoster, use me to ping certain roles", guild=GUILD_INFO["GUILD"])
