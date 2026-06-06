@@ -72,6 +72,25 @@ class Client (commands.Bot):
         if content.startswith("ps"):
             await message.reply(PS)
 
+        if message.mentions:
+            if not message.guild:
+                return
+
+            if message.channel.id != VOUCHES_CHANNEL:
+                resting_role = message.guild.get_role(RESTING_ROLE_ID)
+                if not resting_role:
+                    print("Err: No resting role")
+                    return
+                mentioned_inactives = []
+                for user in message.mentions:
+                    if isinstance(user, discord.Member) and resting_role in user.roles:
+                        mentioned_inactives.append(user.display_name)
+                if len(mentioned_inactives) == 1:
+                    await message.reply(f"**Shhh, {mentioned_inactives[0]} is inactive 😴!**\nPlease, avoid pinging inactive users and contact someone else if needed.")
+                elif len(mentioned_inactives) > 1:
+                    names = ", ".join(mentioned_inactives[:-1]) + f" and {mentioned_inactives[-1]}"
+                    await message.reply(f"**Shhh, {names} are inactive 😴!**\nPlease, avoid pinging inactive users and contact someone else if needed.")
+
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.CommandNotFound):
             return
@@ -101,7 +120,25 @@ async def ping_autocomplete (interaction: discord.Interaction, current: str) -> 
 
     return choices[:25]
 
-@app_commands.checks.has_any_role(*ROLES_WITH_PERMS_TO_USE_BOT)
+
+"""
+#################################################################################################################################
+#                                                               COMANDOS                                                        #
+#################################################################################################################################
+
+1. /ping
+2. /set active
+2. /set inactive
+
+"""
+
+"""
+#################################################################################################################################
+#                                                                PING                                                           #
+#################################################################################################################################
+"""
+
+@app_commands.checks.has_any_role(*ROLES_WITH_PERMS_TO_USE__PING)
 @client.tree.command(name="ping", description="If you are a hoster or a premium hoster, use me to ping certain roles", guild=GUILD)
 @app_commands.autocomplete(role=ping_autocomplete)
 async def ping(interaction: discord.Interaction, role: str):
@@ -126,8 +163,68 @@ async def ping(interaction: discord.Interaction, role: str):
         await interaction.response.send_message("You don't have perms to ping that role", ephemeral=True)
         return
 
-    if target_role_id: 
+    if target_role_id:
         await interaction.response.send_message(f"<@&{target_role_id}>")
+        print(f"{interaction.user.name} used /ping")
+
+
+"""
+#################################################################################################################################
+#                                                             ACTIVITY                                                          #
+#################################################################################################################################
+"""
+
+class SetActivity(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=60)
+
+    @discord.ui.button(label=BUTTON_ACTIVITY_ACTIVE_LABEL, style=BUTTON_ACTIVITY_ACTIVE_STYLE, custom_id=BUTTON_ACTIVITY_ACTIVE_CUSTOM_ID)
+    async def btn_activity_active(self, interaction: discord.Interaction, button: discord.ui.Button):
+        resting_role = interaction.guild.get_role(RESTING_ROLE_ID)
+        if not resting_role:
+            print("Err: No resting role")
+            return
+        if resting_role in interaction.user.roles:
+            await interaction.user.remove_roles(resting_role)
+
+        for child in self.children:
+            child.disabled = True
+
+        await interaction.response.edit_message(
+            content = f"✅ Done. You're active",
+            view=self
+        )
+
+        staff_chat = interaction.guild.get_channel(STAFF_CHANNEL)
+        if staff_chat:
+            await staff_chat.send(f"{interaction.user.mention} is active")
+
+    @discord.ui.button(label=BUTTON_ACTIVITY_INACTIVE_LABEL, style=BUTTON_ACTIVITY_INACTIVE_STYLE, custom_id=BUTTON_ACTIVITY_INACTIVE_CUSTOM_ID)
+    async def btn_activity_inactive(self, interaction: discord.Interaction, button: discord.ui.Button):
+        resting_role = interaction.guild.get_role(RESTING_ROLE_ID)
+        if not resting_role:
+            print("Err: No resting role")
+            return
+        if resting_role not in interaction.user.roles:
+            await interaction.user.add_roles(resting_role)
+
+        for child in self.children:
+            child.disabled = True
+
+        await interaction.response.edit_message(
+            content = f"✅ Done. You're inactive",
+            view=self
+        )
+
+        staff_chat = interaction.guild.get_channel(STAFF_CHANNEL)
+        if staff_chat:
+            await staff_chat.send(f"{interaction.user.mention} is inactive")
+
+@app_commands.checks.has_any_role(*ROLES_WITH_PERMS_TO_USE__ACTIVITY)
+@client.tree.command(name="activity", description="If you are a staff member, use me to declare yourself active or inactive", guild=GUILD)
+async def activity (interaction: discord.Interaction):
+    view = SetActivity()
+    await interaction.response.send_message(f"Press the button that best suits your purpose", view=view, ephemeral=True)
 
 def main():
     if not TOKEN:

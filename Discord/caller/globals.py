@@ -9,9 +9,13 @@ from discord.ext import commands
 GUILD_ID = 1479320102745800838
 GUILD = discord.Object(id=GUILD_ID)
 
+"""
+#################################################################################################################################
+#                                                                ROLES                                                          #
+#################################################################################################################################
+"""
 ADMIN_ROLE_ID = 1483236165019631799
 SECURITY_MANAGER_ROLE_ID = 1486549522803982396
-
 HOSTER_ROLE_ID = 1480252394481910012
 PREMIUM_HOSTER_ROLE_ID = 1497426112471367751
 SANTA_CLAUS_ROLE_ID = 1508246646671016026
@@ -19,8 +23,24 @@ LEAK_PING_MANAGER_ROLE_ID = 1479949973947682826
 SHOP_RESET_MANAGER_ROLE_ID = 1479949902657093842
 TOURNAMENT_MANAGER_ROLE_ID = 1480030870822977638
 CHALLENGE_MANAGER_ROLE_ID = 1480773783974449295
+STAFF_TEAM_ROLE_ID = 1479986763534700807
+RESTING_ROLE_ID = 1512632251517763604
 
-ROLES_WITH_PERMS_TO_USE_BOT = [
+"""
+#################################################################################################################################
+#                                                             CHANNELS                                                          #
+#################################################################################################################################
+"""
+STAFF_CHANNEL = 1479987103436771462
+VOUCHES_CHANNEL = 1482214901513453629
+
+"""
+#################################################################################################################################
+#                                                           COMMAND PERMS                                                       #
+#################################################################################################################################
+"""
+
+ROLES_WITH_PERMS_TO_USE__PING = [
     HOSTER_ROLE_ID,
     PREMIUM_HOSTER_ROLE_ID,
     SANTA_CLAUS_ROLE_ID,
@@ -29,6 +49,16 @@ ROLES_WITH_PERMS_TO_USE_BOT = [
     TOURNAMENT_MANAGER_ROLE_ID,
     CHALLENGE_MANAGER_ROLE_ID
 ]
+ROLES_WITH_PERMS_TO_USE__ACTIVITY = [
+    STAFF_TEAM_ROLE_ID
+]
+
+"""
+#################################################################################################################################
+#                                                            OTHER PERMS                                                        #
+#################################################################################################################################
+"""
+
 ROLES_WITH_PERMS_TO_PING__BADGES = [
     HOSTER_ROLE_ID,
     PREMIUM_HOSTER_ROLE_ID
@@ -37,14 +67,15 @@ ROLES_WITH_PERMS_TO_PING__SHOP_RESET = [
     SHOP_RESET_MANAGER_ROLE_ID
 ]
 ROLES_WITH_PERMS_TO_PING__GIVEAWAY = [
-    SANTA_CLAUS_ROLE_ID
+    SANTA_CLAUS_ROLE_ID,
+    PREMIUM_HOSTER_ROLE_ID
 ]
 ROLES_WITH_PERMS_TO_PING__LEAK = [
     LEAK_PING_MANAGER_ROLE_ID
 ]
 ROLES_WITH_PERMS_TO_PING__TOURNAMENT = [
     TOURNAMENT_MANAGER_ROLE_ID
-]
+] 
 
 ROLES_ID = {
     "hotel hell": 1480063127864475832, "hotelhell": 1480063127864475832, "hh": 1480063127864475832,
@@ -122,3 +153,17 @@ padrao_w2 = re.compile(r'\b(?:' + '|'.join(map(re.escape, perms_gamble_words2)) 
 PS = "https://www.roblox.com/share?code=24f0174ac4601144ba68fa7999fbda3b&type=Server"
 
 COOLDOWN = 2.0
+
+
+"""
+#################################################################################################################################
+#                                                              BUTTONS                                                          #
+#################################################################################################################################
+"""
+
+BUTTON_ACTIVITY_ACTIVE_LABEL = "🔥Set active🔥"
+BUTTON_ACTIVITY_ACTIVE_STYLE = discord.ButtonStyle.success
+BUTTON_ACTIVITY_ACTIVE_CUSTOM_ID = "btn_activity_active"
+BUTTON_ACTIVITY_INACTIVE_LABEL = "😴Set inactive😴"
+BUTTON_ACTIVITY_INACTIVE_STYLE = discord.ButtonStyle.danger
+BUTTON_ACTIVITY_INACTIVE_CUSTOM_ID = "btn_activity_inactive"
