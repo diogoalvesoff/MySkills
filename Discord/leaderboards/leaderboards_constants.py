@@ -9,6 +9,7 @@ from shared.hardcore_globals import ROLE_IDS
 """
 
 COOLDOWN = 2
+DELAY_BEFORE_DELETING_MESSAGE = 10
 
 
 """
@@ -17,17 +18,24 @@ COOLDOWN = 2
 #################################################################################################################################
 """
 
-ROLES_WITH_PERMS_TO__CLOSE_A_CHALLENGE_THREAD = [
+ROLES_WITH_PERMS_TO__CLOSE_A_BATTLE_THREAD = [
     ROLE_IDS["ADMIN_ROLE_ID"],
     ROLE_IDS["LEADERBOARDS_MANAGER_ROLE_ID"]
 ]
-ROLES_WITH_PERMS_TO__LOCK_A_CHALLENGE_THREAD = [
+ROLES_WITH_PERMS_TO__LOCK_A_BATTLE_THREAD = [
     ROLE_IDS["ADMIN_ROLE_ID"],
     ROLE_IDS["LEADERBOARDS_MANAGER_ROLE_ID"]
 ]
-ROLES_WITH_PERMS_TO__UNLOCK_A_CHALLENGE_THREAD = [
+ROLES_WITH_PERMS_TO__UNLOCK_A_BATTLE_THREAD = [
     ROLE_IDS["ADMIN_ROLE_ID"],
     ROLE_IDS["LEADERBOARDS_MANAGER_ROLE_ID"]
+]
+
+ROLES_WITH_PERMS_TO__TALK_IN_BATTLE_CHANNEL = [
+    ROLE_IDS["ADMIN_ROLE_ID"],
+    ROLE_IDS["LEADERBOARDS_MANAGER_ROLE_ID"],
+    ROLE_IDS["HEAD_MOD_ROLE_ID"],
+    ROLE_IDS["MOD_ROLE_ID"]
 ]
 
 
@@ -37,25 +45,25 @@ ROLES_WITH_PERMS_TO__UNLOCK_A_CHALLENGE_THREAD = [
 #################################################################################################################################
 """
 
-BUTTON_CHALLENGE_JOIN_THREAD = {
+BUTTON_BATTLE_JOIN_THREAD = {
     "label": "🔥JOIN🔥",
     "style": discord.ButtonStyle.success,
-    "cid": "btn_challenge_join"
+    "cid": "btn_battle_join"
 }
-BUTTON_CHALLENGE_CLOSE_THREAD = {
+BUTTON_BATTLE_CLOSE_THREAD = {
     "label": "✖️CLOSE✖️",
     "style": discord.ButtonStyle.danger,
-    "cid": "btn_challenge_close_thread"
+    "cid": "btn_battle_close_thread"
 }
-BUTTON_CHALLENGE_LOCK_THREAD = {
+BUTTON_BATTLE_LOCK_THREAD = {
     "label": "🔒LOCK🔒",
     "style": discord.ButtonStyle.secondary,
-    "cid": "btn_challenge_lock_thread"
+    "cid": "btn_battle_lock_thread"
 }
-BUTTON_CHALLENGE_UNLOCK_THREAD = {
+BUTTON_BATTLE_UNLOCK_THREAD = {
     "label": "🔓UNLOCK🔓",
     "style": discord.ButtonStyle.success,
-    "cid": "btn_challenge_unlock_thread"
+    "cid": "btn_battle_unlock_thread"
 }
 
 
@@ -65,8 +73,8 @@ BUTTON_CHALLENGE_UNLOCK_THREAD = {
 #################################################################################################################################
 """
 
-EMBED_CHALLENGE_THREAD = {
+EMBED_BATTLE_THREAD = {
     "title" : "⚔️ Battle Session ⚔️",
-    "description" : "Use this space to describe how the battle terms.\nTry to make it clear so all players understand the rules",
+    "description" : "Use this space to describe the battle terms.\nTry to make it clear so all players understand the rules",
     "color" : 0xff5500
 }
