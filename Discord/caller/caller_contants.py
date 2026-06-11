@@ -86,7 +86,7 @@ PING_CATEGORIES = [
 #################################################################################################################################
 """
 
-_PERMS_GAMBLE_WORDS1 = ["admin", "administrator", "mod", "moderator", "perms", "permissions", "pass", "permes", "prems", "pers", "perm"]
+_PERMS_GAMBLE_WORDS1 = ["admin", "administrator", "mod", "moderator", "perms", "permissions", "permes", "prems", "pers", "perm"]
 _PERMS_GAMBLE_WORDS2 = ["make", "rn", "now", "right now", "please", "me", "i", "gimme", "gimmie", "give", "perms", "pass"]
 PATTERN_W1 = re.compile(r'\b(?:' + '|'.join(map(re.escape, _PERMS_GAMBLE_WORDS1)) + r')\b', re.IGNORECASE)
 PATTERN_W2 = re.compile(r'\b(?:' + '|'.join(map(re.escape, _PERMS_GAMBLE_WORDS2)) + r')\b', re.IGNORECASE)
