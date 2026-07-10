@@ -7,8 +7,8 @@ from dotenv import load_dotenv
 
 from shared.hardcore_globals import GUILD_INFO, ROLE_IDS, ROLE_NAMES, CHANNEL_IDS
 from caller.caller_contants import (
-    PS, COOLDOWN,
-    ROLES_WITH_PERMS_TO_USE__PING, ROLES_WITH_PERMS_TO_PING__BADGES, ROLES_WITH_PERMS_TO_PING__SHOP_RESET, ROLES_WITH_PERMS_TO_PING__GIVEAWAY, ROLES_WITH_PERMS_TO_PING__LEAK, ROLES_WITH_PERMS_TO_PING__TOURNAMENT, ROLES_WITH_PERMS_TO_USE__ACTIVITY,
+    PS_OPTIONS, COOLDOWN, GAMBLING_PERMS_CHANNELS, SHARED_CHANNEL_CHOICES,
+    ROLES_WITH_PERMS_TO_USE__PING, ROLES_WITH_PERMS_TO_PING__BADGES, ROLES_WITH_PERMS_TO_PING__SHOP_RESET, ROLES_WITH_PERMS_TO_PING__GIVEAWAY, ROLES_WITH_PERMS_TO_PING__LEAK, ROLES_WITH_PERMS_TO_PING__TOURNAMENT, ROLES_WITH_PERMS_TO_USE__ACTIVITY, ROLES_WITH_PERMS_TO__USE_TALK, ROLES_WITH_PERMS_TO_PING__CHALLENGE,
     PING_CATEGORIES,
     PATTERN_W1, PATTERN_W2,
     BUTTON_ACTIVITY_ACTIVE, BUTTON_ACTIVITY_INACTIVE
@@ -25,7 +25,7 @@ class Client (commands.Bot):
         intents.message_content = True
         intents.reactions = True                                    # lets see reactions
         intents.guilds = True                                       # lets see specific guild info
-        intents.members = True                                      # lets assign roles to users~
+        intents.members = True                                      # lets assign roles to users
         super().__init__(command_prefix="!", intents=intents)
         self.gamble_cooldown = commands.CooldownMapping.from_cooldown(1, COOLDOWN, commands.BucketType.user)
 
@@ -55,41 +55,45 @@ class Client (commands.Bot):
         if num_words == 0:
             return
 
+        lower_content = content.lower()
+        if lower_content in PS_OPTIONS.keys():
+            await message.reply(PS_OPTIONS[lower_content])
+
+        # After this, ignores dms
+        if not message.guild:
+            return
+
         # 3. Lógica principal
-        perms_channel = message.author.guild.get_channel(1510644799311450152)
-        if num_words == 1:
-            # Regra: Se tem 1 palavra, tem de estar na words1
-            if PATTERN_W1.search(content):
-                print(f"{message.author.mention} asked for perms: {content}")
-                await message.delete()
-                if perms_channel:
-                    await perms_channel.send(f"{message.author.mention} asked for perms!\nGambling ......\nNo")
-                else:
-                    print("E: No perms_channel")
+        perms_channel = message.author.guild.get_channel(CHANNEL_IDS["PERMS_CHANNEL"])
+        if perms_channel:
+            if message.channel.id in GAMBLING_PERMS_CHANNELS:
+                if num_words == 1:
+                    # Regra: Se tem 1 palavra, tem de estar na words1
+                    if PATTERN_W1.search(content):
+                        print(f"{message.author.mention} asked for perms: {content}")
+                        await message.delete()
+                        if perms_channel:
+                            await perms_channel.send(f"{message.author.mention} asked for perms!\nGambling ......\nNo")
+                        else:
+                            print("E: No perms_channel")
                     
-        elif num_words > 1:
-            # Regra: Se tem > 1 palavra, precisa de uma da words1 E uma da words2
-            if PATTERN_W1.search(content) and PATTERN_W2.search(content):
-                print(f"{message.author.mention} asked for perms: {content}")
-                await message.delete()
+                elif num_words > 1:
+                    # Regra: Se tem > 1 palavra, precisa de uma da words1 E uma da words2
+                    if PATTERN_W1.search(content) and PATTERN_W2.search(content):
+                        print(f"{message.author.mention} asked for perms: {content}")
+                        await message.delete()
+                        if perms_channel:
+                            await perms_channel.send(f"{message.author.mention} asked for perms!\nGambling ......\nNo")
+                        else:
+                            print("E: No perms_channel")
+
+            if content.startswith("1/10"):
                 if perms_channel:
-                    await perms_channel.send(f"{message.author.mention} asked for perms!\nGambling ......\nNo")
+                    await perms_channel.send(f"True")
                 else:
                     print("E: No perms_channel")
-
-        if content.startswith("1/10"):
-            if perms_channel:
-                await perms_channel.send(f"True")
-            else:
-                print("E: No perms_channel")
-
-        if content.startswith("ps"):
-            await message.reply(PS)
 
         if message.mentions:
-            if not message.guild:
-                return
-
             if message.channel.id != CHANNEL_IDS.get("VOUCHES_CHANNEL"):
                 resting_role = message.guild.get_role(ROLE_IDS.get("RESTING_ROLE_ID"))
                 if not resting_role:
@@ -100,10 +104,10 @@ class Client (commands.Bot):
                     if isinstance(user, discord.Member) and resting_role in user.roles:
                         mentioned_inactives.append(user.display_name)
                 if len(mentioned_inactives) == 1:
-                    await message.reply(f"**Shhh, {mentioned_inactives[0]} is inactive 😴!**\nPlease, avoid pinging inactive users and contact someone else if needed.")
+                    await message.reply(f"**Sorry, {mentioned_inactives[0]} is inactive 😴!**\nIt means {mentioned_inactives[0]} is not available right now and probably won't respond anytime soon :/")
                 elif len(mentioned_inactives) > 1:
                     names = ", ".join(mentioned_inactives[:-1]) + f" and {mentioned_inactives[-1]}"
-                    await message.reply(f"**Shhh, {names} are inactive 😴!**\nPlease, avoid pinging inactive users and contact someone else if needed.")
+                    await message.reply(f"**Sorry, {names} are inactive 😴!**\nIt means {names} are not available right now and they probably won't respond anytime soon :/")
 
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.CommandNotFound):
@@ -151,7 +155,7 @@ async def ping_autocomplete (interaction: discord.Interaction, current: str) -> 
     return choices[:25]
 
 @app_commands.checks.has_any_role(*ROLES_WITH_PERMS_TO_USE__PING)
-@client.tree.command(name="ping", description="If you are a hoster or a premium hoster, use me to ping certain roles", guild=GUILD_INFO["GUILD"])
+@client.tree.command(name="ping", description="If you have perms, use me to ping certain roles", guild=GUILD_INFO["GUILD"])
 @app_commands.autocomplete(role=ping_autocomplete)
 async def ping(interaction: discord.Interaction, role: str):
     role_key = role.lower()
@@ -176,7 +180,10 @@ async def ping(interaction: discord.Interaction, role: str):
         return
 
     if target_role_id:
-        await interaction.response.send_message(f"<@&{target_role_id}>")
+        await interaction.response.send_message(
+            f"<@&{target_role_id}>",
+            allowed_mentions=discord.AllowedMentions(roles=True)
+        )
         print(f"{interaction.user.name} used /ping")
 
 
@@ -237,6 +244,25 @@ class SetActivity(discord.ui.View):
 async def activity (interaction: discord.Interaction):
     view = SetActivity()
     await interaction.response.send_message(f"Press the button that best suits your purpose", view=view, ephemeral=True)
+
+"""
+@app_commands.checks.has_any_role(*ROLES_WITH_PERMS_TO__USE_TALK)
+@client.tree.command(name="talk", description="talk", guild=GUILD_INFO["GUILD"])
+@app_commands.choices(channel=SHARED_CHANNEL_CHOICES)
+async def talk (interaction: discord.Interaction, message: str, channel: app_commands.Choice[str]):
+    if not message:
+        await interaction.response.send_message("✖️ Your message must not be empty ✖️", ephemeral=True)
+        return
+    if not channel:
+        await interaction.response.send_message("✖️ You must choose a channel to send the message ✖️", ephemeral=True)
+        return
+    target_channel = interaction.guild.get_channel(CHANNEL_IDS[channel.value])
+    if not target_channel:
+        await interaction.response.send_message("✖️ That channel doesn't exist ✖️", ephemeral=True)
+        return
+    await target_channel.send(message)
+    await interaction.response.send_message("✅ Message sent ✅", ephemeral=True)
+"""
 
 def main():
     if not TOKEN:
